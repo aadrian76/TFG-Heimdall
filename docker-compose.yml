@@ -1,0 +1,50 @@
+services:
+  mysql:
+    build: ./docker/mysql
+    container_name: bd_heimdall
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - ${DB_DATA_DIR}:/var/lib/mysql
+    networks:
+      - red_interna 
+
+  php:
+    build: ./docker/php
+    container_name: php_procesador
+    restart: unless-stopped
+    volumes:
+      - ${SRC_DIR}:/var/www/html
+    environment:
+      DB_HOST: mysql
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - red_interna 
+
+  apache:
+    build: ./docker/apache
+    container_name: servidor_web
+    restart: unless-stopped
+    ports:
+      - "${APACHE_PORT}:80" 
+    volumes:
+      - ${SRC_DIR}:/usr/local/apache2/htdocs
+    depends_on:
+      - php
+      - mysql
+    networks:
+      - red_interna # Para hablar con PHP y MySQL
+      - red_publica # Para exponer la web al exterior
+
+networks:
+  red_interna:
+    internal: true 
+    driver: bridge
+  red_publica:
+    driver: bridge
