@@ -41,6 +41,13 @@ CREATE TABLE accesos (
         REFERENCES tarjetas(uid_rfid) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE administradores (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_login VARCHAR(50) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL, -- Guardar siempre encriptada (password_hash en PHP)
+    ultimo_login DATETIME
+);
+
 -- 6. Insertar datos de prueba (Seeders)
 -- Esto te servirá para probar tu pantalla PHP de inmediato
 INSERT INTO usuarios (nombre, apellido, documento, cargo, ruta_foto) VALUES 

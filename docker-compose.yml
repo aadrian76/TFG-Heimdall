@@ -35,7 +35,7 @@ services:
     ports:
       - "${APACHE_PORT}:80" 
     volumes:
-      - ${SRC_DIR}:/usr/local/apache2/htdocs
+      - ${SRC_DIR}:/var/www/html
     depends_on:
       - php
       - mysql
