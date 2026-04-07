@@ -1,0 +1,31 @@
+// DESCOMENTAR LINEAS, COMENTADAS POR FALLO CON GITHUB
+#include <WiFi.h>
+#include <HTTPClient.h>
+
+const char* ssid = "TU_WIFI";
+const char* password = "TU_PASSWORD";
+// IP de tu ordenador donde corre Docker (no uses localhost, usa la IP privada ej: 192.168.1.50)
+const char* serverName = "http://192.168.1.50/validar.php"; 
+
+void enviarLectura(String uid) {
+  if(WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    http.begin(serverName);
+    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    String httpRequestData = "uid=" + uid;
+    int httpResponseCode = http.POST(httpRequestData);
+
+    if (httpResponseCode > 0) {
+      String response = http.getString();
+      Serial.println("Respuesta del servidor: " + response);
+      
+      if(response.startsWith("ALLOWED")) {
+        digitalWrite(2, HIGH); // Encender LED verde o abrir relé
+        delay(2000);
+        digitalWrite(2, LOW);
+      }
+    }
+    http.end();
+  }
+}
