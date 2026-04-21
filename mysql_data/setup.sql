@@ -18,7 +18,7 @@ CREATE TABLE usuarios (
     cargo VARCHAR(50),
     ruta_foto VARCHAR(255) DEFAULT 'default.png',
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci; 
 
 -- 4. Tabla de Tarjetas (Relacional)
 CREATE TABLE tarjetas (
@@ -28,7 +28,7 @@ CREATE TABLE tarjetas (
     fecha_asignacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_usuario_tarjeta FOREIGN KEY (id_usuario) 
         REFERENCES usuarios(id_usuario) ON DELETE SET NULL ON UPDATE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci; 
 
 -- 5. Tabla de Accesos (Transaccional)
 CREATE TABLE accesos (
@@ -39,14 +39,14 @@ CREATE TABLE accesos (
     acceso_concedido BOOLEAN DEFAULT TRUE,
     CONSTRAINT fk_tarjeta_acceso FOREIGN KEY (uid_rfid) 
         REFERENCES tarjetas(uid_rfid) ON DELETE CASCADE ON UPDATE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci; 
 
 CREATE TABLE administradores (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_login VARCHAR(50) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL, -- Guardar siempre encriptada (password_hash en PHP)
     ultimo_login DATETIME
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci; 
 
 -- 6. Insertar datos de prueba (Seeders)
 -- Esto te servirá para probar tu pantalla PHP de inmediato
