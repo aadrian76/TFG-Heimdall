@@ -1,0 +1,16 @@
+Options -Indexes
+# Evita que se listen los archivos del directorio
+
+# Protege archivos sensibles
+<FilesMatch "^(conexion|validar)\.php$">
+    # validar.php solo debe ser accesible desde IPs del ESP32
+    # conexion.php nunca debe ser accesible directamente
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Permite acceso normal al resto
+<FilesMatch "\.(php|css|js|jpg|png)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>

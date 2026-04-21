@@ -4,6 +4,7 @@ include 'conexion.php';
 
 // Si ya está logueado, lo mandamos al index
 if (isset($_SESSION['admin_id'])) {
+    session_regenerate_id(true);
     header("Location: index.php");
     exit();
 }

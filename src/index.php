@@ -88,13 +88,13 @@ try {
                     <img src="fotos/<?php echo htmlspecialchars($ultimo['ruta_foto']); ?>" alt="Foto Usuario">
                 </div>
                 
-                <span class="status">● ACCESO CONCEDIDO</span>
-                <div class="name"><?php echo $ultimo['nombre'] . " " . $ultimo['apellido']; ?></div>
-                <span class="cargo"><?php echo $ultimo['cargo']; ?></span>
+                <span class="status">ACCESO CONCEDIDO</span>
+                <div class="name"><?php echo htmlspecialchars($ultimo['nombre']) . " " . htmlspecialchars($ultimo['apellido']); ?></div>
+                <span class="cargo"><?php echo htmlspecialchars($ultimo['cargo']); ?></span>
 
                 <div class="info-row">
                     <span>UID Tarjeta:</span>
-                    <span><?php echo $ultimo['uid_rfid']; ?></span>
+                    <span><?php echo htmlspecialchars($ultimo['uid_rfid']); ?></span>
                 </div>
                 <div class="info-row">
                     <span>Hora de Entrada:</span>
