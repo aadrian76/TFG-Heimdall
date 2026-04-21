@@ -10,9 +10,8 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     volumes:
       - ${DB_DATA_DIR}:/var/lib/mysql
-      - ./docker/mysql/01-setup.sql:/docker-entrypoint-initdb.d/setup.sql
-      - ./docker/mysql/02-data-test.sql:/docker-entrypoint-initdb.d/data.sql
-
+      - ./docker/mysql/01-setup.sql:/docker-entrypoint-initdb.d/01-setup.sql
+      - ./docker/mysql/02-data-test.sql:/docker-entrypoint-initdb.d/02-data.sql
     networks:
       - red_interna 
 
