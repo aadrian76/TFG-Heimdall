@@ -46,13 +46,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $uid = $_POST['uid'];
 
         try {
+            
             $conexion->beginTransaction();
+            // Subida de foto
+            $foto_nombre = null;
+            if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+                $extension  = pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION);
+                $extensiones_permitidas = ['jpg', 'jpeg', 'png'];
+    
+                if (!in_array(strtolower($extension), $extensiones_permitidas)) {
+                    throw new Exception("Formato de imagen no permitido.");
+                }
+    
+                // Nombre único para evitar colisiones
+                $foto_nombre = uniqid('emp_', true) . '.' . $extension;
+                $ruta_destino = '/var/data/fotos/' . $foto_nombre;
+    
+                if (!move_uploaded_file($_FILES['foto']['tmp_name'], $ruta_destino)) {
+                    throw new Exception("Error al guardar la foto.");
+                }
+            }
 
             // 1. Insertar en la tabla usuarios[cite: 6]
-            $sqlUsuario = "INSERT INTO usuarios (nombre, apellido, documento, cargo) VALUES (?, ?, ?, ?)";
+            $sqlUsuario = "INSERT INTO usuarios (nombre, apellido, documento, cargo, foto) VALUES (?, ?, ?, ?, ?)";
             $stmtU = $conexion->prepare($sqlUsuario);
-            $stmtU->execute([$nombre, $apellido, $documento, $cargo]);
-            
+            $stmtU->execute([$nombre, $apellido, $documento, $cargo, $foto_nombre]);
+
             $id_usuario = $conexion->lastInsertId();
 
             // 2. Insertar en la tabla tarjetas[cite: 6]
@@ -95,7 +114,7 @@ $uid_actual = file_exists($archivo_uid) ? file_get_contents($archivo_uid) : "";
     <?php echo $mensaje; ?>
     
     <div class="form-container">
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
             <label>Nombre:</label>
             <input type="text" name="nombre" required>
             
@@ -107,6 +126,9 @@ $uid_actual = file_exists($archivo_uid) ? file_get_contents($archivo_uid) : "";
             
             <label>Cargo:</label>
             <input type="text" name="cargo">
+
+            <label>Foto del empleado:</label>
+            <input type="file" name="foto" accept="image/jpeg, image/png" required>
             
             <div class="uid-box">
                 <label style="color: blue; font-weight: bold;">UID de Tarjeta (RFID):</label>
