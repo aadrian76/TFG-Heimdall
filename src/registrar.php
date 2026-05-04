@@ -24,7 +24,7 @@ if ($es_esp32) {
 include 'conexion.php'; // Usa la conexión configurada para Docker[cite: 6]
 
 $mensaje = "";
-$archivo_uid = 'ultimo_uid.txt'; // Archivo temporal para comunicar el ESP32 y la Web
+$archivo_uid = '/var/data/ultimo_uid.txt'; // Archivo temporal para comunicar el ESP32 y la Web
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
