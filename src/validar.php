@@ -13,7 +13,7 @@ include 'conexion.php'; // Aquí se inicializa $conexion (PDO)
 
 // El ESP32 debe enviar el UID por POST
 if (isset($_POST['uid'])) {
-    $uid = $_POST['uid'];
+    $uid = strtoupper(preg_replace('/[\s:\-]/', '', $_POST['uid'])); // Normalizamos el UID (sin espacios, mayúsculas)
 
     try {
         // 1. Buscamos la tarjeta y el usuario asociado
