@@ -21,11 +21,13 @@ services:
     restart: unless-stopped
     volumes:
       - ${SRC_DIR}:/var/www/html
+      - ./var/data:/var/data
     environment:
       DB_HOST: mysql
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
+      ESP32_TOKEN: ${ESP32_TOKEN}
     networks:
       - red_interna 
 

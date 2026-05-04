@@ -1,4 +1,14 @@
 <?php
+// ── AUTENTICACIÓN ESP32 ──────────────────────────────────────────
+$token_recibido = $_SERVER['HTTP_X_ESP32_TOKEN'] ?? '';
+$token_esperado = getenv('ESP32_TOKEN');
+
+if (!hash_equals($token_esperado, $token_recibido)) {
+    http_response_code(401);
+    die("No autorizado");
+}
+// ────────────────────────────────────────────────────────────────
+
 include 'conexion.php'; // Aquí se inicializa $conexion (PDO)
 
 // El ESP32 debe enviar el UID por POST
