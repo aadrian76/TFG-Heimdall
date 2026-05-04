@@ -1,11 +1,25 @@
 <?php
+session_start();
+
+// ── AUTENTICACIÓN DUAL ────────────────────────────────────────────
 $token_recibido = $_SERVER['HTTP_X_ESP32_TOKEN'] ?? '';
 $token_esperado = getenv('ESP32_TOKEN');
+$es_esp32 = !empty($token_recibido);
 
-if (!hash_equals($token_esperado, $token_recibido)) {
-    http_response_code(401);
-    die("No autorizado"); // Si el token falla, muere aquí
+if ($es_esp32) {
+    // Petición del ESP32 → validar por token
+    if (!hash_equals($token_esperado, $token_recibido)) {
+        http_response_code(401);
+        die("No autorizado");
+    }
+} else {
+    // Petición desde navegador → validar por sesión
+    if (!isset($_SESSION['admin_id'])) {
+        header("Location: login.php");
+        exit();
+    }
 }
+// ─────────────────────────────────────────────────────────────────
 
 include 'conexion.php'; // Usa la conexión configurada para Docker[cite: 6]
 
