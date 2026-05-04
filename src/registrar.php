@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
                 // Nombre único para evitar colisiones
                 $foto_nombre = uniqid('emp_', true) . '.' . $extension;
-                $ruta_destino = '/var/data/fotos/' . $foto_nombre;
+                $ruta_destino = '/var/www/html/fotos/' . $foto_nombre;
     
                 if (!move_uploaded_file($_FILES['foto']['tmp_name'], $ruta_destino)) {
                     throw new Exception("Error al guardar la foto.");
@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
 
             // 1. Insertar en la tabla usuarios[cite: 6]
-            $sqlUsuario = "INSERT INTO usuarios (nombre, apellido, documento, cargo, foto) VALUES (?, ?, ?, ?, ?)";
+            $sqlUsuario = "INSERT INTO usuarios (nombre, apellido, documento, cargo, ruta_foto) VALUES (?, ?, ?, ?, ?)";
             $stmtU = $conexion->prepare($sqlUsuario);
             $stmtU->execute([$nombre, $apellido, $documento, $cargo, $foto_nombre]);
 
