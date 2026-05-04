@@ -27,5 +27,5 @@ INSERT INTO accesos (uid_rfid, fecha_hora, tipo_acceso, acceso_concedido) VALUES
 -- 4. Insertar Administradores
 -- Las contraseñas son ejemplos; en producción usa password_hash() de PHP
 INSERT INTO administradores (usuario_login, password_hash, ultimo_login) VALUES
-('admin_root', '$2y$10$e0MYzXyjpJS7Pd0RVvHwHe.9W6u2T9/uVvA8W.pU5p6Z6Gz4tG2S2', NOW()), -- Hash de 'password123'
-('operador_01', '$2y$10$8K1p/aP9W7R0mD7FqQ6pOuI4pG9e6K5jR9BvA7Gv.6Y8xY8Z8Z8Z8', NULL);
+('admin_root', '$2y$10$snBxlsqh/Apsag56i7Yt3eo9HGCX2qkXfcr/c0yU71zLtSdZ6mJEG', NOW()), -- Hash de 'password123'
+('operador_01', '$2y$10$vZK9EH3bdZFTVF008qopWuqfWSnRy5YykldW/bDa0gaMUObZy0Fam', NULL); -- Hash de '1qAz2wsx'
