@@ -1,11 +1,57 @@
-// DESCOMENTAR LINEAS, COMENTADAS POR FALLO CON GITHUB
+#include <SPI.h>
+#include <MFRC522.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
 
-const char* ssid = "TU_WIFI";
-const char* password = "TU_PASSWORD";
-// IP de tu ordenador donde corre Docker (no uses localhost, usa la IP privada ej: 192.168.1.50)
-const char* serverName = "http://192.168.1.50/validar.php"; 
+// --- CONFIGURACIÓN DE RED [!] ---
+const char* ssid = "TU_WIFI";          // [!] Tu nombre de red
+const char* password = "TU_PASSWORD";  // [!] Tu contraseña
+
+// --- CONFIGURACIÓN SERVIDOR [!] ---
+// Sustituye la IP por el dominio real o la IP de tu servidor donde está el .php
+const char* serverName = "http://192.168.1.50/validar.php"; // [!] MARCAR CLARAMENTE: Dominio o IP real del servidor
+
+// --- PINES RFID ---
+#define SS_PIN  5
+#define RST_PIN 22
+MFRC522 rfid(SS_PIN, RST_PIN);
+
+void setup() {
+  Serial.begin(115200);
+  SPI.begin();           // Inicia bus SPI
+  rfid.PCD_Init();       // Inicia MFRC522
+  
+  pinMode(2, OUTPUT);    // LED integrado para feedback
+
+  WiFi.begin(ssid, password);
+  Serial.print("Conectando a WiFi");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\nConectado a la red!");
+}
+
+void loop() {
+  // Busca nuevas tarjetas
+  if (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial())
+    return;
+
+  // Obtener el UID de la tarjeta en formato String
+  String uidString = "";
+  for (byte i = 0; i < rfid.uid.size; i++) {
+    uidString += String(rfid.uid.uidByte[i] < 0x10 ? "0" : "");
+    uidString += String(rfid.uid.uidByte[i], HEX);
+  }
+  uidString.toUpperCase();
+  
+  Serial.println("UID detectado: " + uidString);
+  enviarLectura(uidString);
+
+  // Detener lectura para no repetir
+  rfid.PICC_HaltA();
+  rfid.PCD_StopCrypto1();
+}
 
 void enviarLectura(String uid) {
   if(WiFi.status() == WL_CONNECTED) {
@@ -21,10 +67,16 @@ void enviarLectura(String uid) {
       Serial.println("Respuesta del servidor: " + response);
       
       if(response.startsWith("ALLOWED")) {
-        digitalWrite(2, HIGH); // Encender LED verde o abrir relé
+        Serial.println("ACCESO CONCEDIDO");
+        digitalWrite(2, HIGH); 
         delay(2000);
         digitalWrite(2, LOW);
+      } else {
+        Serial.println("ACCESO DENEGADO");
       }
+    } else {
+      Serial.print("Error en HTTP: ");
+      Serial.println(httpResponseCode);
     }
     http.end();
   }
