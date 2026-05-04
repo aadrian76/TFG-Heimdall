@@ -4,12 +4,12 @@
 #include <HTTPClient.h>
 
 // --- CONFIGURACIÓN DE RED [!] ---
-const char* ssid = "TU_WIFI";          // [!] MARCAR CLARAMENTE: Tu SSID
-const char* password = "TU_PASSWORD";  // [!] MARCAR CLARAMENTE: Tu Password
+const char* ssid = "MIWIFI_F7MK";          // [!] MARCAR CLARAMENTE: Tu SSID
+const char* password = "Mf2xSDyq";  // [!] MARCAR CLARAMENTE: Tu Password
 
 // --- CONFIGURACIÓN SERVIDOR [!] ---
 // Usaremos el archivo registrar.php que procesa el formulario y el UID
-const char* serverName = "http://192.168.1.50/registrar.php"; // [!] MARCAR CLARAMENTE: IP de tu servidor
+const char* serverName = "http://192.168.1.135:8080/registrar.php"; // [!] MARCAR CLARAMENTE: IP de tu servidor
 
 // --- PINES RFID RC522 ---
 #define SS_PIN  5
