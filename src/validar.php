@@ -48,6 +48,7 @@ if (isset($_POST['uid'])) {
             if($resultado) {
                 $log = $conexion->prepare("INSERT INTO accesos (uid_rfid, tipo_acceso, acceso_concedido) VALUES (?, 'entrada', 0)");
                 $log->execute([$uid]);
+            } else {
             }
             
             echo "DENIED";
