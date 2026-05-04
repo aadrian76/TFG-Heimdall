@@ -1,0 +1,161 @@
+#include <SPI.h>
+#include <MFRC522.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
+
+// --- CONFIGURACIÓN DE RED ---
+const char* ssid = "MIWIFI_F7MK";
+const char* password = "Mf2xSDyq";
+
+// --- ENDPOINTS DEL SERVIDOR ---
+const char* urlValidar   = "http://192.168.1.135:8080/validar.php";
+const char* urlRegistrar = "http://192.168.1.135:8080/registrar.php";
+const char* token        = "38968b059701401d8e1230a904c250979c6f4e0d031b7cf2b6137d400c4f5339";
+
+// --- PINES RFID RC522 ---
+#define SS_PIN  5
+#define RST_PIN 22
+MFRC522 rfid(SS_PIN, RST_PIN);
+
+// --- PINES DE HARDWARE ---
+#define BOTON_PIN      27
+#define LED_VALIDAR    12
+#define LED_REGISTRAR  14
+#define LED_ACCION      2
+
+// --- VARIABLES DE ESTADO ---
+bool modoRegistro = false;
+unsigned long ultimoTiempoRebote = 0;
+const unsigned long retardoRebote = 50;
+bool botonAnterior = HIGH;
+
+// Prototipos
+void actualizarLEDs();
+void procesarTarjeta(String uid);
+
+void setup() {
+  Serial.begin(115200);
+  SPI.begin();
+  rfid.PCD_Init();
+  byte version = rfid.PCD_ReadRegister(MFRC522::VersionReg);
+  Serial.print("Version RC522: 0x");
+  Serial.println(version, HEX);
+
+  if (version == 0x00 || version == 0xFF) {
+    Serial.println("ERROR: RC522 no detectado. Revisa el cableado SPI.");
+    while (true); // Para el programa aquí para que veas el error
+  } else {
+    Serial.println("RC522 OK.");
+  }
+
+  pinMode(BOTON_PIN,     INPUT_PULLUP);
+  pinMode(LED_VALIDAR,   OUTPUT);
+  pinMode(LED_REGISTRAR, OUTPUT);
+  pinMode(LED_ACCION,    OUTPUT);
+
+  actualizarLEDs();
+
+  WiFi.begin(ssid, password);
+  Serial.print("Conectando a WiFi");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\n¡Conectado con éxito!");
+}
+
+void loop() {
+  // 1. LECTURA DEL BOTÓN con anti-rebote no bloqueante
+  bool botonActual = digitalRead(BOTON_PIN);
+  
+  if (botonAnterior == LOW && botonActual == HIGH) {   // flanco de subida = soltó el botón
+    unsigned long ahora = millis();
+    if (ahora - ultimoTiempoRebote > retardoRebote) {
+      ultimoTiempoRebote = ahora;
+      modoRegistro = !modoRegistro;
+      actualizarLEDs();
+      Serial.print("CAMBIO DE MODO: ");
+      Serial.println(modoRegistro ? "REGISTRO" : "VALIDACION");
+    }
+  }
+  botonAnterior = botonActual;
+
+  // 2. LECTURA DE TARJETA RFID
+  if (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial())
+    return;
+
+  String uidString = "";
+  for (byte i = 0; i < rfid.uid.size; i++) {
+    uidString += String(rfid.uid.uidByte[i] < 0x10 ? "0" : "");
+    uidString += String(rfid.uid.uidByte[i], HEX);
+  }
+  uidString.toUpperCase();
+
+  Serial.println("Tarjeta detectada. UID: " + uidString);
+  procesarTarjeta(uidString);
+
+  rfid.PICC_HaltA();
+  rfid.PCD_StopCrypto1();
+  delay(1500);
+}
+
+void actualizarLEDs() {
+  if (modoRegistro) {
+    digitalWrite(LED_VALIDAR,   LOW);
+    digitalWrite(LED_REGISTRAR, HIGH);
+  } else {
+    digitalWrite(LED_VALIDAR,   HIGH);
+    digitalWrite(LED_REGISTRAR, LOW);
+  }
+}
+
+void procesarTarjeta(String uid) {
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("Error: WiFi desconectado");
+    return;
+  }
+
+  HTTPClient http;
+  const char* urlDestino = modoRegistro ? urlRegistrar : urlValidar;
+
+  http.begin(urlDestino);
+  http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+  http.addHeader("X-ESP32-Token", token);
+
+  String httpRequestData = "uid=" + uid;
+  int httpResponseCode = http.POST(httpRequestData);
+
+  if (httpResponseCode > 0) {
+    String response = http.getString();
+    Serial.println("Servidor (" + String(httpResponseCode) + "): " + response);
+
+    if (!modoRegistro) {
+      // --- MODO VALIDACIÓN ---
+      if (response.startsWith("ALLOWED")) {
+        Serial.println(">>> ACCESO CONCEDIDO <<<");
+        digitalWrite(LED_ACCION, HIGH);   // LED encendido 2s = concedido
+        delay(2000);
+        digitalWrite(LED_ACCION, LOW);
+      } else {
+        Serial.println(">>> ACCESO DENEGADO <<<");
+        for (int i = 0; i < 3; i++) {    // 3 parpadeos rápidos = denegado
+          digitalWrite(LED_ACCION, HIGH);
+          delay(200);
+          digitalWrite(LED_ACCION, LOW);
+          delay(200);
+        }
+      }
+    } else {
+      // --- MODO REGISTRO ---
+      digitalWrite(LED_ACCION, HIGH);   // parpadeo corto = UID enviado
+      delay(500);
+      digitalWrite(LED_ACCION, LOW);
+    }
+
+  } else {
+    Serial.print("Error enviando POST: ");
+    Serial.println(httpResponseCode);
+  }
+
+  http.end();
+}
