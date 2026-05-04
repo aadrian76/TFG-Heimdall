@@ -58,6 +58,7 @@ void enviarLectura(String uid) {
     HTTPClient http;
     http.begin(serverName);
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+    http.addHeader("X-ESP32-Token", "38968b059701401d8e1230a904c250979c6f4e0d031b7cf2b6137d400c4f5339");
 
     String httpRequestData = "uid=" + uid;
     int httpResponseCode = http.POST(httpRequestData);

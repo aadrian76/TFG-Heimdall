@@ -64,6 +64,7 @@ void enviarUID(String uid) {
     // Configuramos el destino
     http.begin(serverName); 
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+    http.addHeader("X-ESP32-Token", "38968b059701401d8e1230a904c250979c6f4e0d031b7cf2b6137d400c4f5339");
 
     // Preparamos el dato POST[cite: 1, 2]
     String httpRequestData = "uid=" + uid;
