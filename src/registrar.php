@@ -1,4 +1,12 @@
 <?php
+$token_recibido = $_SERVER['HTTP_X_ESP32_TOKEN'] ?? '';
+$token_esperado = getenv('ESP32_TOKEN');
+
+if (!hash_equals($token_esperado, $token_recibido)) {
+    http_response_code(401);
+    die("No autorizado"); // Si el token falla, muere aquí
+}
+
 include 'conexion.php'; // Usa la conexión configurada para Docker[cite: 6]
 
 $mensaje = "";
