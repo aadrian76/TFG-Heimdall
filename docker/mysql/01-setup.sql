@@ -48,12 +48,3 @@ CREATE TABLE administradores (
     ultimo_login DATETIME
 );
 
--- 6. Insertar datos de prueba (Seeders)
--- Esto te servirá para probar tu pantalla PHP de inmediato
-INSERT INTO usuarios (nombre, apellido, documento, cargo, ruta_foto) VALUES 
-('Elon', 'Musk', '12345678', 'Director', 'elon.jpg'),
-('Ada', 'Lovelace', '87654321', 'Ingeniera', 'ada.jpg');
-
-INSERT INTO tarjetas (uid_rfid, id_usuario, estado) VALUES 
-('A1 B2 C3 D4', 1, 'activa'),
-('E5 F6 G7 H8', 2, 'activa');
