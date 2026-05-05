@@ -15,4 +15,5 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 
 # Damos permisos al usuario del servidor web
 RUN chown -R www-data:www-data /var/www/html
+ENTRYPOINT ["/entrypoint.sh"]
 USER www-data

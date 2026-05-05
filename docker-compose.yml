@@ -22,7 +22,6 @@ services:
     volumes:
       - ${SRC_DIR}:/var/www/html
       - ./var/data:/var/data
-    command: sh -c "chmod 777 /var/data && chmod 777 /var/www/html && php-fpm"
     environment:
       DB_HOST: mysql
       DB_NAME: ${DB_NAME}
