@@ -8,8 +8,8 @@ const char* ssid = "RED_HEIMDALL";
 const char* password = "espera que se me ha olvidado";
 
 // --- ENDPOINTS DEL SERVIDOR ---
-const char* urlValidar   = "http://192.168.4.3:8080/validar.php";
-const char* urlRegistrar = "http://192.168.4.3:8080/registrar.php";
+const char* urlValidar   = "http://10.67.243.136:8080/validar.php";
+const char* urlRegistrar = "http://10.67.243.136:8080/registrar.php";
 const char* token        = "38968b059701401d8e1230a904c250979c6f4e0d031b7cf2b6137d400c4f5339";
 
 // --- PINES RFID RC522 ---

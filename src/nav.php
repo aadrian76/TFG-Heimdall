@@ -250,5 +250,15 @@ $pagina_actual = basename($_SERVER['PHP_SELF']);
         Tarjetas
       </a>
     </li>
+    <li>
+      <a href="logout.php" style="--hover-color: #ef5350; --hover-border: rgba(239,83,80,0.35); --hover-bg: rgba(239,83,80,0.1);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Cerrar Sesión
+      </a>
+    </li>
   </ul>
 </nav>
